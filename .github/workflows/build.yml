@@ -1,24 +1,38 @@
-name: Build ESP8266 Firmware
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+        with:
+          version: 0.33.1
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install PlatformIO
-      run: pip install platformio
+      - name: Install ESP8266 Board Core
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install esp8266:esp8266
 
-    - name: Build firmware
-      run: platformio run
+      - name: Install Libraries
+        run: |
+          arduino-cli lib install "Blynk"
+          arduino-cli lib install "NewPing"
+          arduino-cli lib install "Servo"
+
+      - name: Build Arduino Sketch
+        run: |
+          arduino-cli compile --fqbn esp8266:esp8266:nodemcuv2 aquabot
