@@ -103,7 +103,7 @@ cd aquabot
 
 ## 👨‍💻 Author
 
-Made with ❤️ by **@reyhanhfz**
+Made with ❤️ by **aquabot developer team**
 
 ---
 
